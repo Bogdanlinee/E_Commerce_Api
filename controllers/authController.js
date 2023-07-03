@@ -20,6 +20,9 @@ const register = async (req, res) => {
   res.status(StatusCodes.CREATED).json({ user });
 }
 const login = async (req, res) => {
+  const { name, email, password } = req.body;
+  if(email)
+  const user = await User.findOne({email})
   res.send('login')
 }
 const logout = async (req, res) => {
