@@ -24,12 +24,6 @@ app.get('/', (req, res) => {
   res.send('hello world');
 });
 
-app.get('/api/v1/', (req, res) => {
-  console.log(req.cookies);
-  console.log(req.signedCookies);
-  res.send('hello world');
-});
-
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
