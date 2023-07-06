@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors/index');
-const { attachCookiesToResponse } = require('../utils/index');
+const { attachCookiesToResponse, logoutCookie } = require('../utils/index');
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -50,7 +50,13 @@ const login = async (req, res) => {
 }
 
 const logout = async (req, res) => {
-  res.send('logout some string value')
+  res.cookie('token', 'logout', {
+    httpOnly: true,
+    expires: new Date(Date.now()),
+    secure: process.env.NODE_ENV === 'production',
+    signed: true
+  })
+  res.status(StatusCodes.OK).json({ msg: 'user logged out!' })
 }
 
 module.exports = { register, login, logout }

@@ -10,6 +10,7 @@ const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 // router export
 const authRouter = require('./routes/authRoutes');
@@ -24,11 +25,6 @@ app.get('/', (req, res) => {
   res.send('hello world');
 });
 
-app.get('/api/v1/', (req, res) => {
-  console.log(req.cookies);
-  console.log(req.signedCookies);
-  res.send('hello world');
-});
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

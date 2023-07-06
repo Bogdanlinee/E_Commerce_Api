@@ -88,14 +88,14 @@
 
 - [x] check if email and password exist, if one missing return 400
 - [x] find user, if no user return 401
-- [] check password, if does not match return 401
-- [] if everything is correct, attach cookie
+- [x] check password, if does not match return 401
+- [x] if everything is correct, attach cookie
   and send back the same response as in register
 
 #### Logout Route
 
-- [] set token cookie equal to some string value
-- [] set expires:new Date(Date.now())
+- [x] set token cookie equal to some string value
+- [x] set expires:new Date(Date.now())
 
 #### User Routes Structure
 
