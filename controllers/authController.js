@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors/index');
-const { attachCookiesToResponse, logoutCookie } = require('../utils/index');
+const { attachCookiesToResponse } = require('../utils/index');
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
