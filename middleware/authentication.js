@@ -1,4 +1,4 @@
-const { UnauthenticatedError } = require('../errors/index');
+const CunstomError = require('../errors/index');
 const { isTokenValid } = require('../utils/jwt');
 
 const auth = (req, res, next) => {
@@ -13,8 +13,17 @@ const auth = (req, res, next) => {
     req.user = { name: payload.name, userId: payload.userId, role: payload.role }
     next();
   } catch (error) {
-    throw new UnauthenticatedError('Authentication failed');
+    throw new CunstomError.UnauthenticatedError('Authentication failed');
   }
 }
 
-module.exports = { auth };
+const authorizePermissions = (...roles) => {
+  return (req, res, next) => {
+    if (roles.indexOf(req.user.role) === -1) {
+      throw new CunstomError.UnAuthorizedError('Unauthorized to access this route.');
+    }
+    next();
+  }
+}
+
+module.exports = { auth, authorizePermissions };
