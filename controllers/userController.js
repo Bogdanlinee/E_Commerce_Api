@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const { StatusCodes } = require('http-status-codes');
 const CustomAPIError = require('../errors/index');
+const { createUserToken, attachCookiesToResponse, checkPermissions } = require('../utils/index');
 
 const getAllUsers = async (req, res) => {
   const users = await User.find({ role: 'user' }).select('-password');
@@ -13,6 +14,9 @@ const getSingleUser = async (req, res) => {
   if (!user) {
     throw new CustomAPIError.NotFoundError(`No user with id ${id}`);
   }
+
+  checkPermissions(req.user, user._id);
+
   res.status(StatusCodes.OK).json(user);
 }
 
@@ -40,8 +44,24 @@ const updateUserPassword = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: 'Success. Password was updated.' });
 }
 
+// update user with user.save()
 const updateUser = async (req, res) => {
-  res.send('updateUser')
+  const { name, email } = req.body;
+  const { userId } = req.user;
+
+  if (!name.trim() || !email.trim()) {
+    throw new CustomAPIError.BadRequestError('Email or name is missing');
+  }
+
+  const user = await User.findOne({ _id: userId });
+  user.email = email;
+  user.name = name;
+  await user.save();
+
+  const tokenUser = createUserToken(user);
+
+  attachCookiesToResponse({ res, user: tokenUser });
+  res.status(StatusCodes.OK).json({ msg: 'Success. User was updated.' });
 }
 
 module.exports = { getAllUsers, getSingleUser, showCurrentUser, updateUser, updateUserPassword };

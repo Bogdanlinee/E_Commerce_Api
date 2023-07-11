@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors/index');
-const { attachCookiesToResponse } = require('../utils/index');
+const { attachCookiesToResponse, createUserToken } = require('../utils/index');
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -19,7 +19,7 @@ const register = async (req, res) => {
   userData.role = role;
 
   const user = await User.create(userData);
-  const tokenUser = { name: user.name, userId: user._id, role: user.role, };
+  const tokenUser = createUserToken(user);
 
   attachCookiesToResponse({ res, user: tokenUser });
   res.status(StatusCodes.CREATED).json({ user: tokenUser });
@@ -43,7 +43,7 @@ const login = async (req, res) => {
     throw new CustomError.UnauthenticatedError('Password is incorrect');
   }
 
-  const tokenUser = { name: user.name, userId: user._id, role: user.role, };
+  const tokenUser = createUserToken(user);
 
   attachCookiesToResponse({ res, user: tokenUser });
   res.status(StatusCodes.OK).json({ user: tokenUser });
@@ -55,7 +55,7 @@ const logout = async (req, res) => {
     expires: new Date(Date.now()),
     secure: process.env.NODE_ENV === 'production',
     signed: true
-  })
+  });
   res.status(StatusCodes.OK).json({ msg: 'user logged out!' })
 }
 

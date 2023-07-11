@@ -27,7 +27,7 @@ const UserShcema = new mongoose.Schema({
     trim: true,
     required: [true, 'Please, provide your user password.'],
     minLength: 6,
-    maxLength: 50
+    maxLength: 100
   },
   role: {
     type: String,
@@ -37,9 +37,10 @@ const UserShcema = new mongoose.Schema({
 });
 
 UserShcema.pre('save', async function (req, res, next) {
-  const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hash(this.password, salt);
-  return this.password = hash;
+  if (this.isModified('password')) {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
 });
 
 UserShcema.methods.comparePassword = async function (candidatePassword) {
