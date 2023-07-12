@@ -15,6 +15,7 @@ const cors = require('cors');
 // router export
 const authRouter = require('./routes/authRoutes');
 const userRouter = require('./routes/userRoutes');
+const productRouter = require('./routes/productRoutes');
 
 app.use(morgan('tiny'));
 app.use(express.json());
@@ -25,8 +26,8 @@ app.use('/api/v1/auth', authRouter)
 app.get('/', (req, res) => {
   res.send('hello world');
 });
-app.use('/api/v1/users', userRouter)
-
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/products', productRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
