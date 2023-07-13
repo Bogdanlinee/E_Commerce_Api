@@ -10,7 +10,7 @@ const {
   uploadImage
 } = require('../controllers/productController');
 
-router.route('/uploadImage').post(uploadImage);
+router.route('/uploadImage').post(auth, authorizePermissions('admin'), uploadImage);
 router.route('/')
   .get(getAllProducts)
   .post(auth, authorizePermissions('admin'), createProduct);
