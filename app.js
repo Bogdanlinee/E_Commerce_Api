@@ -10,7 +10,7 @@ const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
+const fileUpload = require('express-fileupload');
 
 // router export
 const authRouter = require('./routes/authRoutes');
@@ -20,6 +20,8 @@ const productRouter = require('./routes/productRoutes');
 app.use(morgan('tiny'));
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
+app.use(express.static('./public'));
+app.use(fileUpload());
 
 // route
 app.use('/api/v1/auth', authRouter)
