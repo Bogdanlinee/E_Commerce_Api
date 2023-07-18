@@ -2,6 +2,7 @@ const Review = require('../models/Review');
 const Product = require('../models/Product');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors/index');
+const { checkPermissions } = require('../utils/index')
 
 const createReview = async (req, res) => {
   const { product: productId } = req.body;
@@ -24,7 +25,8 @@ const createReview = async (req, res) => {
 }
 
 const getAllReviews = async (req, res) => {
-  const reviews = await Review.find();
+  const reviews = await Review.find({})
+    .populate({ path: 'product', select: 'company name price' })
 
   if (reviews.length === 0) {
     throw new CustomError.NotFoundError('No reviews yet');
@@ -35,7 +37,8 @@ const getAllReviews = async (req, res) => {
 
 const getSingleReview = async (req, res) => {
   const { id: reviewId } = req.params;
-  const review = await Review.findOne({ _id: reviewId });
+  const review = await Review.findOne({ _id: reviewId })
+    .populate({ path: 'product', select: 'company name price' });
 
   if (!review) {
     throw new CustomError.BadRequestError(`No review with id ${reviewId}`);
@@ -53,13 +56,14 @@ const updateReview = async (req, res) => {
     throw new CustomError.BadRequestError(`No review with id ${reviewId}`);
   }
 
-  if (req.user.userId !== review.user.toString()) {
-    throw new CustomError.BadRequestError(`You have no permission to delete review ${reviewId}`);
-  }
+  checkPermissions(req.user, review.user);
 
-  const updatedReview = await Review.findOneAndUpdate({ _id: reviewId }, { rating, title, comment }, { new: true, runValidators: true });
+  review.rating = rating;
+  review.title = title;
+  review.comment = comment;
+  await review.save();
 
-  res.status(StatusCodes.OK).json({ updatedReview });
+  res.status(StatusCodes.OK).json({ review });
 }
 
 const deleteReview = async (req, res) => {
@@ -70,10 +74,7 @@ const deleteReview = async (req, res) => {
     throw new CustomError.BadRequestError(`No review with id ${reviewId}`);
   }
 
-  if (req.user.userId !== review.user.toString()) {
-    throw new CustomError.BadRequestError(`You have no permission to delete review ${reviewId}`);
-  }
-
+  checkPermissions(req.user, review.user);
   await review.deleteOne({ _id: reviewId });
 
   res.status(StatusCodes.OK).json({ msg: 'success' });
