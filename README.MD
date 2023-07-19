@@ -271,7 +271,7 @@
 - [x] if no review, 404
 - [x] check permissions
 - [x] set review properties equal to rating, title, comment
-- [] use await review.save()
+- [x] use await review.save()
 - [x] send back 200
 
 #### Populate
