@@ -19,6 +19,22 @@ const productRouter = require('./routes/productRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const orderRouter = require('./routes/orderRoutes');
 
+// security
+const rateLimiter = require('express-rate-limiter');
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const cors = require('cors');
+const mongoSanitize = require('express-mongo-sanitize');
+
+app.set('trust proxy', 1);
+app.use(rateLimiter({
+  windowsMs: 15 * 60 * 1000, max: 60
+}))
+app.use(helmet());
+app.use(xss());
+app.use(cors());
+app.use(mongoSanitize());
+
 app.use(morgan('tiny'));
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
